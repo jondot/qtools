@@ -1,0 +1,2 @@
+﻿Usage: qtruncate
+       qtruncate -n .\private$\foo_q

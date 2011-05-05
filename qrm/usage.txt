@@ -1,0 +1,2 @@
+﻿Usage: qrm
+       qrm -n .\private$\foo_q

@@ -1,0 +1,2 @@
+﻿Usage: qtail
+       qtail -n .\private$\foo_q

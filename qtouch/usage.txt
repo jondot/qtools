@@ -1,0 +1,2 @@
+﻿Usage: qtouch
+       qtouch -n .\private$\foo_q -p FullControl -u Everyone -l 400 -t

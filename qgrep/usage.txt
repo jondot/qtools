@@ -1,0 +1,2 @@
+﻿Usage: qgrep
+       qgrep -n .\private$\foo_q -e hello

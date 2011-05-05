@@ -1,0 +1,2 @@
+﻿Usage: qls
+       qls -m SuperComputer -f log

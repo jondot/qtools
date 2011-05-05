@@ -1,0 +1,2 @@
+﻿Usage: qcount
+       qcount -n .\private$\foo_q
