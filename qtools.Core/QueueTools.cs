@@ -13,12 +13,19 @@ namespace qtools.Core
         bool Exists(string queue);
         void Delete(string queue);
         void Create(string queue, string user, string permissions, bool transactional, int limit);
-        IEnumerable<QueueDescriptor> GetPrivateQueues(string machine);
-        IEnumerable<QueueDescriptor> GetPublicQueuesByMachine(string machine);
+        IEnumerable<QueueDescriptor> GetPrivateQueues(string machine, QueueTransaction xactionality);
+        IEnumerable<QueueDescriptor> GetPublicQueuesByMachine(string machine, QueueTransaction xactionality);
         void DeleteAllMessages(string queue);
         IEnumerable<MessageDescriptor> Tail(string queue);
         IEnumerable<GrepResult> Grep(string queue, string expression, bool caseInsensitive);
         int Count(string queue);
+    }
+
+    public enum QueueTransaction
+    {
+        Ignore,
+        Transactional,
+        NonTransactional
     }
 
     public class GrepResult
@@ -153,9 +160,9 @@ namespace qtools.Core
             }
         }
 
-        public IEnumerable<QueueDescriptor> GetPublicQueuesByMachine(string machine)
+        public IEnumerable<QueueDescriptor> GetPublicQueuesByMachine(string machine, QueueTransaction xactionality)
         {
-            return MessageQueue.GetPublicQueuesByMachine(machine).Select(x => new QueueDescriptor { Path = x.Path });
+            return MessageQueue.GetPublicQueuesByMachine(machine).Where(x=> ByTransactionality(xactionality, x.Transactional) ).Select(x => new QueueDescriptor { Path = x.Path });
         }
 
         public void DeleteAllMessages(string subject)
@@ -163,13 +170,16 @@ namespace qtools.Core
             new MessageQueue(subject).Purge();
         }
 
-        public IEnumerable<QueueDescriptor> GetPrivateQueues(string machine)
+        public IEnumerable<QueueDescriptor> GetPrivateQueues(string machine, QueueTransaction xactionality)
         {
             // Get a list of queues with the specified category.
-            return MessageQueue.GetPrivateQueuesByMachine(machine).Select(x => new QueueDescriptor { Path = x.Path });
+            return MessageQueue.GetPrivateQueuesByMachine(machine).Where(x => ByTransactionality(xactionality, x.Transactional)).Select(x => new QueueDescriptor { Path = x.Path });
         }
 
-
+        private static bool ByTransactionality(QueueTransaction xactionality, bool queueTransactional)
+        {
+            return xactionality == QueueTransaction.Transactional ? queueTransactional : (xactionality == QueueTransaction.NonTransactional ? !queueTransactional : true);
+        }
     }
 
     public class MessageDescriptor

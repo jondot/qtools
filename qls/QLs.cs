@@ -21,17 +21,19 @@ namespace qls
             IEnumerable<QueueDescriptor> queueDescriptors;
             if(_options.Public)
             {
-                queueDescriptors = tools.GetPublicQueuesByMachine(_options.Machine);
+                queueDescriptors = tools.GetPublicQueuesByMachine(_options.Machine, TransactionFromFlags(_options.Transactional, _options.NonTransactional));
             }
             else
             {
-                queueDescriptors = tools.GetPrivateQueues(_options.Machine);
+                queueDescriptors = tools.GetPrivateQueues(_options.Machine, TransactionFromFlags(_options.Transactional, _options.NonTransactional));
             }
 
             if(!string.IsNullOrEmpty(_options.Filter))
             {
                 queueDescriptors = Filter(_options.Filter, queueDescriptors);
             }
+
+           
 
             foreach( var q in queueDescriptors)
             {
@@ -46,6 +48,11 @@ namespace qls
         {
             var r = new Regex(filter, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             return queueDescriptors.Where(x => r.IsMatch(x.Name));
+        }
+
+        private static QueueTransaction TransactionFromFlags(bool xactional, bool nonxactional)
+        {
+            return xactional ? QueueTransaction.Transactional : (nonxactional ? QueueTransaction.NonTransactional : QueueTransaction.Ignore);
         }
     }
 }

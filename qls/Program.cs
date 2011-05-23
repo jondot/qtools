@@ -23,6 +23,14 @@ namespace qls
         [Option("m", "Machine", Required = false, HelpText = "Machine, default is local (.)")]
         public string Machine = string.Empty;
 
+        [Option("t", "Transactional", Required = false, HelpText = "Take only transactional queues")]
+        public bool Transactional;
+
+        [Option("n", "Non-transactional", Required = false, HelpText = "Take only non transactional queues")]
+        public bool NonTransactional;
+
+
+
         [HelpOption(HelpText = "display this help screen.")]
         public string GetUsage()
         {
