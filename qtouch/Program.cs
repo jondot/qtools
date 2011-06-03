@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Web.Script.Serialization;
 using CommandLine;
 using CommandLine.Text;
 using qtools.Core;
@@ -32,6 +35,10 @@ namespace qtouch
         [Option("l", "limit (KB)", Required = false, HelpText = "Set queue limit in KB")]
         public int Limit = 0;
 
+        [Option("d", "Dump", Required = false, HelpText = "Dump queue descriptions into configuration format")]
+        public string DumpFile;
+
+
         [HelpOption(HelpText = "display this help screen.")]
         public string GetUsage()
         {
@@ -53,8 +60,38 @@ namespace qtouch
             if (!parser.ParseArguments(args, options))
                 Environment.Exit(1);
 
-            if (!Invoke(options.Name, new QTouch(options), new QueueTools(), new ConsoleOutput(), new ConsoleInput()))
+            var consoleOutput = new ConsoleOutput();
+            var queueTools = new QueueTools();
+
+
+            if(!string.IsNullOrEmpty(options.DumpFile))
+            {
+                if(File.Exists(options.DumpFile))
+                {
+                    ImportFromDumpFile(options, queueTools, consoleOutput);
+                    consoleOutput.Info(options.DumpFile, "Imported.");
+                }
+                else
+                {
+                    consoleOutput.Error(options.DumpFile, "Does not exist.");
+                    Environment.Exit(1);
+                }
+            }
+            else if (!Invoke(options.Name, new QTouch(options), queueTools, consoleOutput, new ConsoleInput()))
                 Environment.Exit(1);
+        }
+
+        private static void ImportFromDumpFile(Options options, QueueTools queueTools, ConsoleOutput consoleOutput)
+        {
+            var s = new JavaScriptSerializer();
+            var deserialize = s.Deserialize<IEnumerable<QueueDescriptor>>(File.ReadAllText(options.DumpFile));
+            foreach (var queueDescriptor in deserialize)
+            {
+                options.Limit = (int)queueDescriptor.Limit;
+                options.Transactional = queueDescriptor.Transactional;
+
+                Invoke(queueDescriptor.Name, new QTouch(options), queueTools, consoleOutput, new ConsoleInput());
+            }
         }
     }
 }

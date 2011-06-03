@@ -1,2 +1,3 @@
 ﻿Usage: qtouch
        qtouch -n .\private$\foo_q -p FullControl -u Everyone -l 400 -t
+	   qtouch.exe -d test.queues -u Everyone -p FullControl -f

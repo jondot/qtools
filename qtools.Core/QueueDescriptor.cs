@@ -1,4 +1,6 @@
-﻿namespace qtools.Core
+﻿using System;
+
+namespace qtools.Core
 {
     public class QueueDescriptor
     {
@@ -14,6 +16,10 @@
         }
 
         public string Name { get; private set; }
+
+        public bool Transactional { get; set; }
+
+        public long Limit { get; set; }
 
         public override string ToString()
         {

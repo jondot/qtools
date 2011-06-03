@@ -7,6 +7,17 @@ namespace qtools.Core.CLI
 {
     public class BaseProgram
     {
+        protected static bool Invoke(string initialSubject, ICommand q, IQueueTools tools, IOutput output, IInput input)
+        {
+            if (string.IsNullOrEmpty(initialSubject))
+            {
+                return ExecuteSafelyForEachInput(input, tools, output, q.Execute);
+            }
+
+            return ExecuteSafely(initialSubject, tools, output, (Func<string, IQueueTools, IOutput, bool>)q.Execute);
+
+        }
+
         // in case action takes a subject (queue)
         protected static bool ExecuteSafely(string subject, IQueueTools tools, IOutput output, Func<string, IQueueTools, IOutput, bool> action)
         {
@@ -35,16 +46,6 @@ namespace qtools.Core.CLI
 
             return res ;
         }
-
-        protected static bool Invoke(string initialSubject, ICommand q, IQueueTools tools, IOutput output, IInput input)
-        {
-            if (string.IsNullOrEmpty(initialSubject))
-            {
-                return ExecuteSafelyForEachInput(input, tools, output, q.Execute);
-            }
-
-            return ExecuteSafely(initialSubject, tools, output, (Func<string, IQueueTools, IOutput, bool>) q.Execute);
-
-        }
+        
     }
 }

@@ -162,7 +162,7 @@ namespace qtools.Core
 
         public IEnumerable<QueueDescriptor> GetPublicQueuesByMachine(string machine, QueueTransaction xactionality)
         {
-            return MessageQueue.GetPublicQueuesByMachine(machine).Where(x=> ByTransactionality(xactionality, x.Transactional) ).Select(x => new QueueDescriptor { Path = x.Path });
+            return MessageQueue.GetPublicQueuesByMachine(machine).Where(x=> ByTransactionality(xactionality, x.Transactional) ).Select(x => new QueueDescriptor { Path = x.Path, Transactional = x.Transactional, Limit = x.MaximumQueueSize });
         }
 
         public void DeleteAllMessages(string subject)
@@ -173,7 +173,7 @@ namespace qtools.Core
         public IEnumerable<QueueDescriptor> GetPrivateQueues(string machine, QueueTransaction xactionality)
         {
             // Get a list of queues with the specified category.
-            return MessageQueue.GetPrivateQueuesByMachine(machine).Where(x => ByTransactionality(xactionality, x.Transactional)).Select(x => new QueueDescriptor { Path = x.Path });
+            return MessageQueue.GetPrivateQueuesByMachine(machine).Where(x => ByTransactionality(xactionality, x.Transactional)).Select(x => new QueueDescriptor { Path = x.Path, Transactional = x.Transactional, Limit = x.MaximumQueueSize });
         }
 
         private static bool ByTransactionality(QueueTransaction xactionality, bool queueTransactional)

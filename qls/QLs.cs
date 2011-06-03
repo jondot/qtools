@@ -33,13 +33,18 @@ namespace qls
                 queueDescriptors = Filter(_options.Filter, queueDescriptors);
             }
 
-           
+            IReporter r;
 
-            foreach( var q in queueDescriptors)
+            if(!string.IsNullOrEmpty(_options.DumpFile))
             {
-                log.Out(q.ToString());
+                r = new JsonFileReporter(queueDescriptors, _options.DumpFile);
             }
-
+            else
+            {
+                r = new LineReporter(queueDescriptors);
+            }
+            
+            r.Report(log);
             return true;
         }
 

@@ -1,2 +1,3 @@
 ﻿Usage: qls
        qls -m SuperComputer -f log
+	   qls -d test.queues

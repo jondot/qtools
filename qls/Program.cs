@@ -29,6 +29,8 @@ namespace qls
         [Option("n", "Non-transactional", Required = false, HelpText = "Take only non transactional queues")]
         public bool NonTransactional;
 
+        [Option("d", "Dump", Required = false, HelpText = "Dump queue descriptions into configuration format")]
+        public string DumpFile;
 
 
         [HelpOption(HelpText = "display this help screen.")]
