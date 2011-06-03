@@ -42,14 +42,14 @@ output :output => [:build, :merge_all] do |out|
   out.erb "build/#{PROJECT}.nuspec.erb", :as => "#{PROJECT}.nuspec", :locals => { :version => bumper_version }
 end
 
-
+desc "Create Zip for Github"
 zip :zip => :output do | zip |
     zip.directories_to_zip "out"
     zip.output_file = "#{PROJECT}.v#{bumper_version.to_s}.zip"
     zip.output_path = File.dirname(__FILE__)
 end
 
-
+desc "Create nuget pacakge"
 task :nu => :output do
   `tools/nuget/nuget.exe p out/#{PROJECT}.nuspec`	
 end
