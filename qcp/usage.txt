@@ -1,0 +1,2 @@
+Usage: qcp
+       qcp -n .\private$\source_q -d .\private$\destination_q

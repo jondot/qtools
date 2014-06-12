@@ -19,6 +19,7 @@ namespace qtools.Core
         IEnumerable<MessageDescriptor> Tail(string queue);
         IEnumerable<GrepResult> Grep(string queue, string expression, bool caseInsensitive);
         int Count(string queue);
+        int Transfer(string subject, string destination, string expression, bool caseInsensitive, bool removeAfter);
     }
 
     public enum QueueTransaction
@@ -104,6 +105,94 @@ namespace qtools.Core
                             {Message = CreateMessageDescriptor(message), Text = matcher.HighlightMatch(body, "<{0}>")};
                 }
             }
+        }
+
+        private void Send(Message message, MessageQueue destination, MessageQueueTransaction transaction)
+        {
+            if (transaction != null)
+                destination.Send(message, message.Label, transaction);
+            else
+                destination.Send(message, message.Label);
+        }
+
+        public int Transfer(string subject, string destination, string expression, bool caseInsensitive, bool removeAfter)
+        {
+            MessageQueueTransaction transaction = null;
+
+            int ret = 0;
+            Regex matcher = null;
+            
+            if (expression != null)
+                matcher = new Regex("(" + expression + ")", RegexOptions.Compiled | (caseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None));
+
+            var messagePropertyFilter = new MessagePropertyFilter
+            {
+                ArrivedTime = true,
+                Body = true,
+                Id = true,
+                Label = true
+            };
+
+
+            var messageQueue = new MessageQueue(subject);
+           
+            if (!Exists(destination))
+            {
+                throw new Exception("Can't write to non-existing queue " + destination + ". You can create it with qtouch.");
+            }
+
+            var destinationQueue = new MessageQueue(destination);
+
+            if (!destinationQueue.CanWrite)
+            {
+                throw new Exception("Can't write to non-writable queue " + destination);
+            }
+
+            if (destinationQueue.Transactional)
+            {
+                transaction = new MessageQueueTransaction();
+                transaction.Begin();
+            }
+
+            destinationQueue.Formatter = messageQueue.Formatter;
+
+            messageQueue.MessageReadPropertyFilter = messagePropertyFilter;
+
+            var messageEnumerator2 = messageQueue.GetMessageEnumerator2();
+            while (messageEnumerator2.MoveNext())
+            {
+                if (messageEnumerator2.Current == null)
+                    continue;
+
+                var message = messageEnumerator2.Current;
+                if (matcher != null)
+                {
+                    using (var streamReader = new StreamReader(message.BodyStream))
+                    {
+                        string body = streamReader.ReadToEnd();
+
+                        if (!matcher.IsMatch(body))
+                            continue;
+
+                        Send(message, destinationQueue, transaction);
+                    }
+                }
+                else
+                {
+                    Send(message, destinationQueue, transaction);
+                }
+
+                ret++;
+
+                if (removeAfter)
+                    messageEnumerator2.RemoveCurrent();
+
+            }
+
+            if (transaction!=null)
+                transaction.Commit();
+
+            return ret;
         }
 
         public int Count(string queue)
