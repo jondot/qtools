@@ -18,6 +18,7 @@ namespace qtools.Core
         void DeleteAllMessages(string queue);
         IEnumerable<MessageDescriptor> Tail(string queue);
         IEnumerable<GrepResult> Grep(string queue, string expression, bool caseInsensitive);
+        IEnumerable<CatResult> Cat(string queue, bool withExtension);
         int Count(string queue);
         int Transfer(string subject, string destination, string expression, bool caseInsensitive, bool removeAfter);
     }
@@ -41,6 +42,19 @@ namespace qtools.Core
         }
     }
 
+    public class CatResult
+    {
+        public MessageDescriptor Message { get; set; }
+
+        public string Text { get; set; }
+        public byte[] Extension { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0}\n{1}\n{2}\n{3}\n{4}{5}", Message.CreatedAt, Message.Id, Message.Label, Text,
+                Extension != null ? System.Text.Encoding.UTF8.GetString(Extension) : "", Extension != null ? "\n" : "");
+        }
+    }
 
     public class QueueTools : IQueueTools
     {
@@ -106,6 +120,39 @@ namespace qtools.Core
                 }
             }
         }
+
+        public IEnumerable<CatResult> Cat(string subject, bool withExtension)
+        {
+            var messagePropertyFilter = new MessagePropertyFilter
+            {
+                ArrivedTime = true,
+                Body = true,
+                Id = true,
+                Label = true,
+                Extension = withExtension
+            };
+
+            var messageQueue = new MessageQueue(subject);
+            messageQueue.MessageReadPropertyFilter = messagePropertyFilter;
+
+            var messageEnumerator2 = messageQueue.GetMessageEnumerator2();
+            while (messageEnumerator2.MoveNext())
+            {
+                if (messageEnumerator2.Current == null)
+                    continue;
+
+                var message = messageEnumerator2.Current;
+
+                using (var streamReader = new StreamReader(message.BodyStream))
+                {
+                    string body = streamReader.ReadToEnd();
+
+                    yield return
+                        new CatResult { Message = CreateMessageDescriptor(message), Text = body, Extension = withExtension ? message.Extension : null };
+                }
+            }
+        }
+
 
         private void Send(Message message, MessageQueue destination, MessageQueueTransaction transaction)
         {

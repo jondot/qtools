@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qtail", "qtail\qtail.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qtruncate", "qtruncate\qtruncate.csproj", "{29F0740B-8C4C-42D9-A9B8-05D0EBC543FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qcat", "qcat\qcat.csproj", "{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +121,16 @@ Global
 		{29F0740B-8C4C-42D9-A9B8-05D0EBC543FB}.Release|Mixed Platforms.Build.0 = Release|x86
 		{29F0740B-8C4C-42D9-A9B8-05D0EBC543FB}.Release|x86.ActiveCfg = Release|x86
 		{29F0740B-8C4C-42D9-A9B8-05D0EBC543FB}.Release|x86.Build.0 = Release|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Debug|x86.ActiveCfg = Debug|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Debug|x86.Build.0 = Debug|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Release|Any CPU.ActiveCfg = Release|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Release|Mixed Platforms.Build.0 = Release|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Release|x86.ActiveCfg = Release|x86
+		{84B79DD1-F11D-4955-BFF2-BDAE27F2214D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
