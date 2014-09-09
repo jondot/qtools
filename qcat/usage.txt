@@ -1,0 +1,2 @@
+﻿Usage: qcat
+       qcat -n .\private$\foo_q
